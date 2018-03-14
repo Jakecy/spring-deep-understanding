@@ -1,0 +1,8 @@
+#服务提供者的端口号以7000开始
+server:
+  port: 7001
+  
+spring:
+  application:
+    name:   microservice-user
+    
