@@ -14,22 +14,22 @@
     </dependency>
     <!-- 引入spring的aop依赖 -->
     <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aop</artifactId>
-        <version>4.1.6.RELEASE</version>
-    </dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-aop</artifactId>
+    	<version>5.0.4.RELEASE</version>
+   	</dependency>
      <!--引入apsectj依赖  -->
-     <dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.6.11</version>
-	 </dependency>
-	
+	 <dependency>
+	    <groupId>org.aspectj</groupId>
+	    <artifactId>aspectjrt</artifactId>
+	    <version>1.8.13</version>
+	</dependency>
+	<!-- 引入aspectjweaver依赖 -->
 	<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-			<version>1.6.11</version>
-    </dependency>
+	    <groupId>org.aspectj</groupId>
+	    <artifactId>aspectjweaver</artifactId>
+	    <version>1.8.13</version>
+	</dependency>
 </dependencies>
 
 <!-- maven的build插件 -->
