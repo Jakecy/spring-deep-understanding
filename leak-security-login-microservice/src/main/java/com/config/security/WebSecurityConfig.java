@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
            = new RequestBodyReaderAuthenticationFilter();
        authenticationFilter.setAuthenticationSuccessHandler(this::loginSuccessHandler);
        authenticationFilter.setAuthenticationFailureHandler(this::loginFailureHandler);
-       authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
+       authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "GET"));
        authenticationFilter.setAuthenticationManager(authenticationManagerBean());
        return authenticationFilter;
    }
@@ -89,7 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
            .anyRequest().authenticated()
            .and()  //这里的and()就是起到一个结束符的作用
            .authorizeRequests()
-		   .antMatchers("/login/**").permitAll()
+		   .antMatchers("/login**").permitAll()
 
 //           .and()
 //           .formLogin()
@@ -146,7 +146,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        AuthenticationException e) throws IOException {
 	 
 	        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-	        objectMapper.writeValue(response.getWriter(), "Nopity nop!");
+	        objectMapper.writeValue(response.getWriter(), "用户不存在!");
 	    }
 	 
 	    private void logoutSuccessHandler(
