@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.AccountMapper">
+
+	<!-- 表-->
+    <sql id="TABLE"><![CDATA[ account ]]></sql>
+
+	<resultMap id="BaseResultMap" type="com.model.Account">
+	    <result column="id" property="id"/>
+        <result column="account" property="accountName"/>
+        <result column="mobile" property="mobile"/>
+        <result column="user_pwd" property="userPwd"/>
+        <result column="pwd_salt" property="pwdSalt"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!-- 所有查询列 -->
+	<sql id="Base_Column_List">
+		<![CDATA[
+		`id` AS 'id',`account` AS 'accountName',`mobile` AS 'mobile',`user_pwd` AS 'userPwd',`pwd_salt` AS 'pwdSalt',
+		`status` AS 'status'
+		]]>
+	</sql>
+
+    <!-- author:chihaojie -->
+    <select id="selectAccount" parameterType="com.model.Account"
+    resultMap="BaseResultMap">
+    	select
+       <include refid="Base_Column_List" />
+       from <include refid="TABLE" />
+       <include refid="QUERY_WHERE_CLAUSE"/>
+    </select>
+     
+
+    
+	
+    
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from <include refid="TABLE" />
+        where id = #{id}
+    </select>
+
+    <select id="selectByUsername" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from <include refid="TABLE" />
+        where account = #{username}
+        union
+        select
+        <include refid="Base_Column_List" />
+        from <include refid="TABLE" />
+        where mobile = #{username}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from <include refid="TABLE" />
+        where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.model.Account" >
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into <include refid="TABLE" /> (
+            `id`,`account`,`mobile`,`user_pwd`,`pwd_salt`,`status`
+        )
+        values (
+            
+            #{id},
+            #{account},
+            #{mobile},
+            #{userPwd},
+            #{pwdSalt},
+            #{status}
+        )
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.model.Account" >
+        update <include refid="TABLE" />
+        <include refid="UPDATE_COLUMN_SET"/>
+        where id = #{id}
+    </update>
+
+    <select id="selectAccountList" parameterType="com.model.Account" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from <include refid="TABLE" />
+        <include refid="QUERY_WHERE_CLAUSE"/>
+    </select>
+
+    <!-- 更新列字段,只要不为NULL则更新,除开主键列 -->
+    <sql id="UPDATE_COLUMN_SET">
+        <set>
+            <if test="accountName != null"><![CDATA[ `account` = #{accountName},]]></if>
+            <if test="mobile != null"><![CDATA[ `mobile` = #{mobile},]]></if>
+            <if test="userPwd != null"><![CDATA[ `user_pwd` = #{userPwd},]]></if>
+            <if test="pwdSalt != null"><![CDATA[ `pwd_salt` = #{pwdSalt},]]></if>
+            <if test="status != null"><![CDATA[ `status` = #{status},]]></if>
+        </set>
+    </sql>
+
+    <!-- 全部条件(更多功能可以通过queryData扩展实现)  -->
+    <sql id="QUERY_WHERE_CLAUSE">
+        <where>
+            <if test="id != null and id != ''"><![CDATA[AND `id` = #{id}]]></if>
+            <if test="accountName != null and accountName != ''"><![CDATA[AND `account` = #{accountName}]]></if>
+            <if test="mobile != null and mobile != ''"><![CDATA[AND `mobile` = #{mobile}]]></if>
+            <if test="userPwd != null and userPwd != ''"><![CDATA[AND `user_pwd` = #{userPwd}]]></if>
+            <if test="pwdSalt != null and pwdSalt != ''"><![CDATA[AND `pwd_salt` = #{pwdSalt}]]></if>
+            <if test="status != null and status != ''"><![CDATA[AND `status` = #{status}]]></if>
+        </where>
+    </sql>
+	
+	<!-- 根据手机号列表查询账号ID列表   -->
+    <select id="selectAccountIdByTelephones" resultType="java.lang.Integer" parameterType="java.util.List" >
+        select
+        id
+        from account
+        where mobile in
+        <foreach collection="telephones" item="telephone" open="(" close=")"
+                 separator=",">
+            #{telephone}
+        </foreach>
+    </select>
+    <!--暂时不需要按地区查找-->
+     <select id="selectAccountIdByArea" resultType="java.lang.Integer"  >
+	        select account_id from account_type_relation 
+	        	where 1=1
+	        	<if test="accountTypeInt != null">
+	        		and ACCOUNT_TYPE=#{accountTypeInt}
+	        	</if>
+	         group by account_id
+    </select>
+    
+    <!-- 根据手机号查询 -->
+    <select id="selectPlatAccountByMobile" resultType="java.lang.Integer">
+    	SELECT 
+			count(*)
+		FROM
+			account a
+		JOIN account_type_relation atr ON a.ID = atr.ACCOUNT_ID
+		AND atr.`STATUS` = 1 and atr.ACCOUNT_TYPE != 4
+		WHERE a.MOBILE = #{mobile}
+    </select>
+    
+    <!-- 根据手机号查询账号  -->
+    <select id="selectByMobile" resultMap="BaseResultMap">
+    	select
+        <include refid="Base_Column_List" />
+        from <include refid="TABLE" />
+        where mobile = #{mobile}
+    </select>
+    
+</mapper>

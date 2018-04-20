@@ -8,7 +8,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
- 
+
+import com.dao.AccountMapper;
+import com.model.Account;
+
 import java.util.ArrayList;
 import java.util.Collection;
  
@@ -20,6 +23,8 @@ public class UserService implements UserDetailsService {
     */
    @Autowired
    private  PasswordEncoder passwordEncoder;
+   @Autowired
+   private AccountMapper 	accountMapper;
 	
 	
     /**
@@ -29,11 +34,21 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("loadUserByUsername()方法的参数user是:"+username);
-    	if("user".equals(username)) {
+        //
+        //从库中获取账户类型信息
+        Account account = accountMapper.selectByMobile(username);
+        //
+        if(account==null){
+        	 throw new UsernameNotFoundException("User not found with login: " + username);
+        }
+        //判断用户名和密码是否
+        if(!"".equals(username)) {
         	/**
         	 * 此处使用encode来加密本真密码
         	 */
-            return new User(username, passwordEncoder.encode("password"), (Collection<? extends GrantedAuthority>) new ArrayList<GrantedAuthority>());
+    		//在这里把Authentication对象打印出来
+    		
+            return new User(username, account.getUserPwd(), (Collection<? extends GrantedAuthority>) new ArrayList<GrantedAuthority>());
         } else {
             throw new UsernameNotFoundException("User not found with login: " + username);
         }

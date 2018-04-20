@@ -135,8 +135,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        HttpServletRequest request,
 	        HttpServletResponse response,
 	        Authentication authentication) throws IOException {
-	 
-	        response.setStatus(HttpStatus.OK.value());
+	    //当流程完整地从AuthenticationFilter中出来之后，我们会得到一个Authentication对象
+   	   //我现在要看的是这个authentication对象的isAuthenticated属性
+   	   System.out.println("-----------------Authentication对象-------");
+   	   System.out.println("------------我们现在得到的authentication对象的isAuthenticated属性值是:"+authentication.isAuthenticated());
+	        
+   	   //设置响应格式
+   	   response.setHeader("Content-type", "text/html;charset=UTF-8");
+	   response.setCharacterEncoding("UTF-8");
+   	   response.setStatus(HttpStatus.OK.value());
+	        
 	        objectMapper.writeValue(response.getWriter(), "Yayy you logged in!");
 	    }
 	 
@@ -144,7 +152,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        HttpServletRequest request,
 	        HttpServletResponse response,
 	        AuthenticationException e) throws IOException {
-	 
+	    	   //设置响应格式
+    	   response.setHeader("Content-type", "text/html;charset=UTF-8");
+ 	       response.setCharacterEncoding("UTF-8");
+    	   response.setStatus(HttpStatus.OK.value());
 	        response.setStatus(HttpStatus.UNAUTHORIZED.value());
 	        objectMapper.writeValue(response.getWriter(), "用户不存在!");
 	    }
@@ -153,6 +164,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        HttpServletRequest request,
 	        HttpServletResponse response,
 	        Authentication authentication) throws IOException {
+	    	//当流程完整地从AuthenticationFilter中出来之后，我们会得到一个Authentication对象
+	    	//我现在要看的是这个authentication对象的isAuthenticated属性
+	    	System.out.println("-----------------Authentication对象-------");
+	    	System.out.println("------------我们现在得到的authentication对象的isAuthenticated属性值是:"+authentication.isAuthenticated());
 	 
 	        response.setStatus(HttpStatus.OK.value());
 	        objectMapper.writeValue(response.getWriter(), "Bye!");
