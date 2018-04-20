@@ -4,6 +4,8 @@ package com.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.service.UserService;
 import com.config.security.filter.RequestBodyReaderAuthenticationFilter;
+import com.config.security.handler.CustomLoginSuccessHandler;
+import com.config.security.handler.CustomloginFailureHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -15,7 +17,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -40,14 +41,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
    @Autowired
    private  PasswordEncoder passwordEncoder;
+   
+   //注入自定义的AuthenticationProvider
+   @Autowired
+   private CustomAuthenticationProvider  customAuthenticationProvider;
+   
+   //注入与登录相关的处理器
+   @Autowired
+   private CustomLoginSuccessHandler  successHandler;
+   @Autowired
+   private CustomloginFailureHandler  failureHandler;
 	
 	
    @Bean
    public RequestBodyReaderAuthenticationFilter authenticationFilter() throws Exception {
        RequestBodyReaderAuthenticationFilter authenticationFilter
            = new RequestBodyReaderAuthenticationFilter();
-       authenticationFilter.setAuthenticationSuccessHandler(this::loginSuccessHandler);
-       authenticationFilter.setAuthenticationFailureHandler(this::loginFailureHandler);
+       authenticationFilter.setAuthenticationSuccessHandler(successHandler);
+       authenticationFilter.setAuthenticationFailureHandler(failureHandler);
        authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "GET"));
        authenticationFilter.setAuthenticationManager(authenticationManagerBean());
        return authenticationFilter;
@@ -73,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
       //这里使用的是方法注入的方式来注入对象
 	  //authProvider()方法
-	   auth.authenticationProvider(authProvider());
+	   auth.authenticationProvider(this.customAuthenticationProvider);
    }
 
    /**
@@ -131,34 +142,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
    
    
    
-   private void loginSuccessHandler(
-	        HttpServletRequest request,
-	        HttpServletResponse response,
-	        Authentication authentication) throws IOException {
-	    //当流程完整地从AuthenticationFilter中出来之后，我们会得到一个Authentication对象
-   	   //我现在要看的是这个authentication对象的isAuthenticated属性
-   	   System.out.println("-----------------Authentication对象-------");
-   	   System.out.println("------------我们现在得到的authentication对象的isAuthenticated属性值是:"+authentication.isAuthenticated());
-	        
-   	   //设置响应格式
-   	   response.setHeader("Content-type", "text/html;charset=UTF-8");
-	   response.setCharacterEncoding("UTF-8");
-   	   response.setStatus(HttpStatus.OK.value());
-	        
-	        objectMapper.writeValue(response.getWriter(), "Yayy you logged in!");
-	    }
-	 
-	    private void loginFailureHandler(
-	        HttpServletRequest request,
-	        HttpServletResponse response,
-	        AuthenticationException e) throws IOException {
-	    	   //设置响应格式
-    	   response.setHeader("Content-type", "text/html;charset=UTF-8");
- 	       response.setCharacterEncoding("UTF-8");
-    	   response.setStatus(HttpStatus.OK.value());
-	        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-	        objectMapper.writeValue(response.getWriter(), "用户不存在!");
-	    }
+  
 	 
 	    private void logoutSuccessHandler(
 	        HttpServletRequest request,

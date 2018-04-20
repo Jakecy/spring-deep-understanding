@@ -146,11 +146,17 @@
     </select>
     
     <!-- 根据手机号查询账号  -->
-    <select id="selectByMobile" resultMap="BaseResultMap">
-    	select
-        <include refid="Base_Column_List" />
-        from <include refid="TABLE" />
-        where mobile = #{mobile}
+    <select id="selectByMobile"     resultType="com.model.Account">
+			SELECT
+				ID AS id,
+				MOBILE AS mobile,
+				USER_PWD AS userPwd,
+				PWD_SALT  AS pwdSalt,
+				STATUS AS STATUS
+			FROM
+				account
+			WHERE
+				MOBILE =#{mobile}
     </select>
     
 </mapper>

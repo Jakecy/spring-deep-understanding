@@ -118,4 +118,10 @@ public class Account implements Serializable {
 		this.pwdSalt = pwdSalt;
 	}
 
+	@Override
+	public String toString() {
+		return "Account [id=" + id + ", mobile=" + mobile + ", userPwd=" + userPwd + ", pwdSalt=" + pwdSalt
+				+ ", status=" + status + "]";
+	}
+
 }

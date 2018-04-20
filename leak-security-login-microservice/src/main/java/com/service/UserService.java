@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.config.security.dto.AccountDetail;
 import com.dao.AccountMapper;
 import com.model.Account;
 
@@ -41,14 +42,17 @@ public class UserService implements UserDetailsService {
         if(account==null){
         	 throw new UsernameNotFoundException("User not found with login: " + username);
         }
+        //把库中的用户信息返回
+        AccountDetail aDetail=new AccountDetail(account.getMobile(), account.getUserPwd(), account.getPwdSalt());
+        System.out.println("info getted from the db is : "+account.toString());
         //判断用户名和密码是否
         if(!"".equals(username)) {
         	/**
         	 * 此处使用encode来加密本真密码
         	 */
     		//在这里把Authentication对象打印出来
-    		
-            return new User(username, account.getUserPwd(), (Collection<? extends GrantedAuthority>) new ArrayList<GrantedAuthority>());
+    		//把查询出的用户信息返回
+            return aDetail;
         } else {
             throw new UsernameNotFoundException("User not found with login: " + username);
         }

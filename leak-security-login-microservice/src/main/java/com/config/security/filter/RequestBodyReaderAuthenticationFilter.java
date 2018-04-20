@@ -54,14 +54,14 @@ public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthe
 				System.out.println("------------参数  password的值:"+password);
 				BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
 				String body = IOUtils.toString(reader);
-				System.out.println("..........服务器接收到的参数是      :"+body);
+			//	System.out.println("..........服务器接收到的参数是      :"+body);
 				//LoginRequest authRequest = objectMapper.readValue(requestBody, LoginRequest.class);
 				LoginRequest authRequest =new LoginRequest();
 				authRequest.setUsername(username);
 				authRequest.setPassword(password);
 				//我们看UsernamePasswordAuthenticationToken的构造方法
 				// UsernamePasswordAuthenticationToken(Object principal, Object credentials)
-				System.out.println("----------:token对象的principal是:"+authRequest.getUsername());
+				System.out.println("----------:token对象的principal是:"+authRequest.getUsername()+"---"+authRequest.getPassword());
 				token = new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword());
                 System.out.println("生成的token是:"+token.toString());
 				// Allow subclasses to set the "details" property
