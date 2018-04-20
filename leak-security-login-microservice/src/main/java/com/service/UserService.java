@@ -2,6 +2,7 @@ package com.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +16,7 @@ import com.model.Account;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
  
 @Service("userService")
 public class UserService implements UserDetailsService {
@@ -43,7 +45,9 @@ public class UserService implements UserDetailsService {
         	 throw new UsernameNotFoundException("User not found with login: " + username);
         }
         //把库中的用户信息返回
-        AccountDetail aDetail=new AccountDetail(account.getMobile(), account.getUserPwd(), account.getPwdSalt());
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        AccountDetail aDetail=new AccountDetail(account.getMobile(), account.getUserPwd(), account.getPwdSalt(),authorities);
         System.out.println("info getted from the db is : "+account.toString());
         //判断用户名和密码是否
         if(!"".equals(username)) {

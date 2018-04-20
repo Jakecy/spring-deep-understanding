@@ -34,8 +34,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 	   	   response.setHeader("Content-type", "text/html;charset=UTF-8");
 		   response.setCharacterEncoding("UTF-8");
 	   	   response.setStatus(HttpStatus.OK.value());
-		        
-		   objectMapper.writeValue(response.getWriter(), "Yayy you logged in!");
+	   	   //登录成功之后，把与该账户相关的信息，返回给客户端浏览器，
+	   	   //以便于让其保存到cookie中
+		       
+		   //objectMapper.writeValue(response.getWriter(), "Yayy you logged in!");
+		   objectMapper.writeValue(response.getWriter(), authentication.getCredentials()+authentication.getPrincipal().toString());
 	}
 
 }
